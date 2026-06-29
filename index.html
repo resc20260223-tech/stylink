@@ -1273,8 +1273,23 @@ function onUpload(e, type) {
   const file = e.target.files[0];
   if (!file) return;
   const r = new FileReader();
-  r.onload = ev => setImg(type, ev.target.result);
+  r.onload = ev => compressAndSetImg(type, ev.target.result);
   r.readAsDataURL(file);
+}
+
+function compressAndSetImg(type, dataUrl) {
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const maxW = 800;
+    let w = img.width, h = img.height;
+    if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    const compressed = canvas.toDataURL('image/jpeg', 0.7);
+    setImg(type, compressed);
+  };
+  img.src = dataUrl;
 }
 
 function setImg(type, dataUrl) {
