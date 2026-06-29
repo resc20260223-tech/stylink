@@ -9,15 +9,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap');
 
 :root {
-  --bg: #0E0C0B;
-  --surface: #1A1614;
-  --surface2: #231F1D;
-  --border: #2E2825;
-  --gold: #C9A96E;
-  --gold-light: #E8D5B0;
+  --bg: #F7F2EC;
+  --surface: #FFFFFF;
+  --surface2: #FDF8F4;
+  --border: #E8DDD4;
+  --gold: #C07B5A;
+  --gold-light: #D4956F;
   --rose: #C4856A;
-  --ivory: #F2EDE6;
-  --muted: #7A6E68;
+  --ivory: #3D2B1F;
+  --muted: #8A7060;
   --white: #FFFFFF;
   --success: #7CAE8A;
   --error: #C47A6A;
@@ -42,7 +42,7 @@ nav {
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  background: rgba(14,12,11,0.92);
+  background: rgba(247,242,236,0.95);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
 }
@@ -75,7 +75,7 @@ nav {
 .nav-tab:hover { color: var(--ivory); }
 .nav-tab.active {
   color: var(--gold);
-  background: rgba(201,169,110,0.12);
+  background: rgba(192,123,90,0.12);
 }
 
 .nav-profile-btn {
@@ -132,10 +132,10 @@ nav {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(14,12,11,0.15) 0%,
-    rgba(14,12,11,0.05) 30%,
-    rgba(14,12,11,0.5) 65%,
-    rgba(14,12,11,0.92) 100%
+    rgba(247,242,236,0.05) 0%,
+    rgba(247,242,236,0.02) 30%,
+    rgba(247,242,236,0.4) 65%,
+    rgba(247,242,236,0.92) 100%
   );
   z-index: 1;
 }
@@ -173,9 +173,9 @@ nav {
   font-size: clamp(32px, 7vw, 58px);
   font-weight: 400;
   line-height: 1.15;
-  color: var(--white);
+  color: var(--ivory);
   margin-bottom: 18px;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+  text-shadow: 0 2px 20px rgba(247,242,236,0.3);
 }
 
 .hero-title em {
@@ -185,7 +185,7 @@ nav {
 
 .hero-sub {
   font-size: 13px;
-  color: rgba(242,237,230,0.75);
+  color: rgba(61,43,31,0.65);
   line-height: 1.85;
   margin-bottom: 32px;
   font-weight: 300;
@@ -216,9 +216,9 @@ nav {
 
 .btn-secondary {
   padding: 15px 28px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(192,123,90,0.08);
   color: var(--ivory);
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid rgba(192,123,90,0.3);
   border-radius: 3px;
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 13px;
@@ -434,6 +434,7 @@ nav {
 .profile-hint {
   background: var(--surface);
   border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(192,123,90,0.06);
   border-radius: 8px;
   padding: 16px 20px;
   margin-bottom: 28px;
@@ -560,6 +561,7 @@ input[type="file"] { display: none; }
   font-family: 'Playfair Display', serif;
   font-size: 18px;
   color: var(--ivory);
+  
   margin-bottom: 8px;
 }
 
@@ -570,7 +572,7 @@ input[type="file"] { display: none; }
 .results-wrap.show { display: block; }
 
 .result-hero-band {
-  background: linear-gradient(135deg, var(--surface) 0%, #1f1a17 100%);
+  background: linear-gradient(135deg, #FFF5EF 0%, #FAE8DF 100%);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 32px 28px;
@@ -589,7 +591,7 @@ input[type="file"] { display: none; }
 .result-type-name {
   font-family: 'Playfair Display', serif;
   font-size: 30px;
-  color: var(--white);
+  color: var(--ivory);
   margin-bottom: 6px;
 }
 
@@ -611,7 +613,7 @@ input[type="file"] { display: none; }
   box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 
-.result-overview { font-size: 13px; color: #a09890; line-height: 1.8; }
+.result-overview { font-size: 13px; color: #7A6050; line-height: 1.8; }
 
 .result-grid {
   display: grid;
@@ -638,7 +640,7 @@ input[type="file"] { display: none; }
 .result-block-title {
   font-family: 'Noto Serif JP', serif;
   font-size: 15px;
-  color: var(--white);
+  color: var(--ivory);
   margin-bottom: 8px;
 }
 
@@ -694,6 +696,7 @@ input[type="file"] { display: none; }
   font-size: 13px;
   font-weight: 500;
   color: var(--ivory);
+  
   margin-bottom: 2px;
 }
 
@@ -719,7 +722,7 @@ input[type="file"] { display: none; }
 
 /* Message block */
 .message-block {
-  background: linear-gradient(135deg, rgba(201,169,110,0.08) 0%, rgba(196,133,106,0.06) 100%);
+  background: linear-gradient(135deg, rgba(192,123,90,0.08) 0%, rgba(196,133,106,0.06) 100%);
   border: 1px solid rgba(201,169,110,0.2);
   border-radius: 8px;
   padding: 24px;
@@ -846,7 +849,7 @@ input[type="file"] { display: none; }
 }
 
 .style-chip.selected {
-  background: rgba(201,169,110,0.12);
+  background: rgba(192,123,90,0.12);
   border-color: var(--gold);
   color: var(--gold);
 }
