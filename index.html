@@ -1453,9 +1453,13 @@ ${profileText}
         messages: [{ role: 'user', content }]
       })
     });
+    if (!res.ok) throw new Error('HTTP ' + res.status + ': ' + await res.text());
     const data = await res.json();
+    if (data.error) throw new Error(JSON.stringify(data.error));
     const raw = data.content.map(i => i.text || '').join('');
-    const clean = raw.replace(/```json|```/g, '').trim();
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON in response: ' + raw.substring(0, 200));
+    const clean = jsonMatch[0];
     diagResult = JSON.parse(clean);
 
     document.getElementById('diag-loading').classList.remove('show');
