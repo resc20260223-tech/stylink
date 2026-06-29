@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STYLINK — AI Fashion Platform</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap');
+
+:root {
+  --bg: #0E0C0B;
+  --surface: #1A1614;
+  --surface2: #231F1D;
+  --border: #2E2825;
+  --gold: #C9A96E;
+  --gold-light: #E8D5B0;
+  --rose: #C4856A;
+  --ivory: #F2EDE6;
+  --muted: #7A6E68;
+  --white: #FFFFFF;
+  --success: #7CAE8A;
+  --error: #C47A6A;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--ivory);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── NAVIGATION ─── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: rgba(14,12,11,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+
+.nav-tab:hover { color: var(--ivory); }
+.nav-tab.active {
+  color: var(--gold);
+  background: rgba(201,169,110,0.12);
+}
+
+.nav-profile-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  color: var(--gold);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+
+.nav-profile-btn:hover { border-color: var(--gold); }
+
+/* ─── PAGES ─── */
+.page { display: none; padding-top: 80px; min-height: 100vh; }
+.page.active { display: block; }
+
+/* ─── HOME / HERO ─── */
+
+/* Full-screen visual hero */
+.hero-visual {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 64px);
+  min-height: 500px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Slideshow */
+.hero-slides {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  background-size: cover;
+  background-position: center top;
+}
+
+.hero-slide.active { opacity: 1; }
+
+/* Gradient overlay */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(14,12,11,0.15) 0%,
+    rgba(14,12,11,0.05) 30%,
+    rgba(14,12,11,0.5) 65%,
+    rgba(14,12,11,0.92) 100%
+  );
+  z-index: 1;
+}
+
+/* Hero text content */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 0 28px 48px;
+  max-width: 700px;
+  width: 100%;
+}
+
+.hero-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 7vw, 58px);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--white);
+  margin-bottom: 18px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.hero-sub {
+  font-size: 13px;
+  color: rgba(242,237,230,0.75);
+  line-height: 1.85;
+  margin-bottom: 32px;
+  font-weight: 300;
+  max-width: 440px;
+}
+
+.hero-cta-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  padding: 15px 32px;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  border-radius: 3px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+.btn-secondary {
+  padding: 15px 28px;
+  background: rgba(255,255,255,0.08);
+  color: var(--ivory);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 3px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(8px);
+}
+
+.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+/* Slide indicators */
+.hero-dots {
+  position: absolute;
+  bottom: 52px;
+  right: 28px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hero-dot {
+  width: 2px;
+  height: 20px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 2px;
+  transition: all 0.4s;
+  cursor: pointer;
+}
+
+.hero-dot.active {
+  background: var(--gold);
+  height: 32px;
+}
+
+/* Trend label on image */
+.hero-trend-badge {
+  position: absolute;
+  top: 90px;
+  right: 28px;
+  z-index: 3;
+  background: rgba(14,12,11,0.7);
+  border: 1px solid rgba(201,169,110,0.3);
+  border-radius: 4px;
+  padding: 10px 14px;
+  backdrop-filter: blur(8px);
+  text-align: right;
+}
+
+.trend-badge-label {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.trend-badge-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 13px;
+  color: var(--ivory);
+}
+
+/* ── TREND STRIP (below hero) ── */
+.trend-strip {
+  padding: 48px 0 0;
+  overflow: hidden;
+}
+
+.trend-strip-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 24px;
+  margin-bottom: 20px;
+}
+
+.trend-strip-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  color: var(--white);
+}
+
+.trend-strip-season {
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+}
+
+/* Horizontal scroll cards */
+.trend-scroll {
+  display: flex;
+  gap: 14px;
+  padding: 0 24px 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.trend-scroll::-webkit-scrollbar { display: none; }
+
+.trend-card {
+  flex: 0 0 200px;
+  scroll-snap-align: start;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  background: var(--surface2);
+}
+
+.trend-card-img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.trend-card:hover .trend-card-img { transform: scale(1.04); }
+
+.trend-card-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 20px 14px 14px;
+  background: linear-gradient(to top, rgba(14,12,11,0.9) 0%, transparent 100%);
+}
+
+.trend-card-cat {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.trend-card-name {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 13px;
+  color: var(--white);
+}
+
+/* Placeholder shimmer for trend cards */
+.trend-card-placeholder {
+  width: 100%;
+  height: 280px;
+  background: linear-gradient(90deg, var(--surface) 0%, var(--surface2) 50%, var(--surface) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ── FEATURE GRID ── */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px 20px;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.feature-card:hover { border-color: var(--gold); }
+
+.feature-icon { font-size: 26px; margin-bottom: 12px; display: block; }
+
+.feature-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 14px;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.feature-desc { font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+/* ─── DIAGNOSIS PAGE ─── */
+.diag-container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.page-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.page-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 32px;
+  line-height: 1.7;
+}
+
+/* Profile mini card */
+.profile-hint {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.profile-hint:hover { border-color: var(--gold); }
+
+.profile-hint-icon { font-size: 24px; }
+
+.profile-hint-text { flex: 1; }
+
+.profile-hint-title { font-size: 13px; font-weight: 500; color: var(--ivory); margin-bottom: 2px; }
+.profile-hint-sub { font-size: 11px; color: var(--muted); }
+
+.profile-hint-arrow { color: var(--gold); font-size: 18px; }
+
+/* Upload */
+.upload-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.upload-box {
+  border: 1.5px dashed var(--border);
+  border-radius: 8px;
+  padding: 28px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-box:hover { border-color: var(--gold); }
+.upload-box.filled { border-style: solid; border-color: var(--gold); padding: 0; }
+.upload-box img.preview { width: 100%; height: 180px; object-fit: cover; border-radius: 6px; display: block; }
+
+.upload-box-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+.upload-box-label { font-size: 13px; color: var(--ivory); margin-bottom: 4px; }
+.upload-box-hint { font-size: 11px; color: var(--muted); }
+
+.remove-x {
+  position: absolute;
+  top: 6px; right: 6px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 22px; height: 22px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+input[type="file"] { display: none; }
+
+.cam-row {
+  display: flex; gap: 10px; margin-bottom: 24px;
+}
+
+.btn-cam {
+  flex: 1;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-cam:hover { border-color: var(--gold); color: var(--gold); }
+
+.btn-diagnose {
+  width: 100%;
+  padding: 18px;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  border-radius: 6px;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-diagnose:hover { background: var(--gold-light); }
+.btn-diagnose:disabled { background: var(--surface2); color: var(--muted); cursor: not-allowed; }
+
+/* ─── LOADING ─── */
+.loading-screen {
+  display: none;
+  text-align: center;
+  padding: 80px 24px;
+}
+
+.loading-screen.show { display: block; }
+
+.loader {
+  width: 56px; height: 56px;
+  border: 3px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 24px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: var(--ivory);
+  margin-bottom: 8px;
+}
+
+.loading-sub { font-size: 12px; color: var(--muted); }
+
+/* ─── RESULTS ─── */
+.results-wrap { display: none; }
+.results-wrap.show { display: block; }
+
+.result-hero-band {
+  background: linear-gradient(135deg, var(--surface) 0%, #1f1a17 100%);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 32px 28px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.result-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.result-type-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 30px;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.result-type-sub {
+  font-size: 13px;
+  color: var(--gold-light);
+  margin-bottom: 16px;
+  letter-spacing: 0.05em;
+}
+
+.palette-row {
+  display: flex; gap: 10px; justify-content: center; margin-bottom: 16px;
+}
+
+.swatch {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.result-overview { font-size: 13px; color: #a09890; line-height: 1.8; }
+
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.result-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.result-block-eye {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.result-block-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 15px;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.result-block-text { font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+.tag {
+  background: rgba(201,169,110,0.1);
+  border: 1px solid rgba(201,169,110,0.25);
+  color: var(--gold-light);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* Brand cards */
+.brand-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 22px;
+  margin-bottom: 14px;
+}
+
+.brand-section-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 16px;
+  color: var(--white);
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.brand-list { display: flex; flex-direction: column; gap: 12px; }
+
+.brand-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: border-color 0.2s;
+  gap: 12px;
+}
+
+.brand-item:hover { border-color: var(--gold); }
+
+.brand-info { flex: 1; }
+
+.brand-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ivory);
+  margin-bottom: 2px;
+}
+
+.brand-desc { font-size: 11px; color: var(--muted); }
+
+.brand-price { font-size: 12px; color: var(--gold); white-space: nowrap; }
+
+.brand-link {
+  display: inline-block;
+  padding: 7px 14px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  color: var(--gold);
+  font-size: 11px;
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.brand-link:hover { background: var(--gold); color: var(--bg); }
+
+/* Message block */
+.message-block {
+  background: linear-gradient(135deg, rgba(201,169,110,0.08) 0%, rgba(196,133,106,0.06) 100%);
+  border: 1px solid rgba(201,169,110,0.2);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 14px;
+}
+
+.message-block-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.message-block-text { font-size: 13px; color: var(--ivory); line-height: 1.9; }
+
+/* Action buttons */
+.action-row {
+  display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap;
+}
+
+.btn-pdf {
+  flex: 1;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--ivory);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-pdf:hover { border-color: var(--gold); color: var(--gold); }
+
+.btn-retry2 {
+  flex: 1;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-retry2:hover { border-color: var(--muted); color: var(--ivory); }
+
+.disclaimer {
+  font-size: 11px;
+  color: var(--border);
+  text-align: center;
+  margin-top: 20px;
+  line-height: 1.7;
+  color: #3d3733;
+}
+
+/* ─── PROFILE PAGE ─── */
+.profile-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.form-section { margin-bottom: 32px; }
+
+.form-section-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 15px;
+  color: var(--gold);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-group { margin-bottom: 14px; }
+
+.form-label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--ivory);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus { border-color: var(--gold); }
+
+.form-input option { background: var(--surface2); }
+
+.style-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+
+.style-chip {
+  padding: 8px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.style-chip.selected {
+  background: rgba(201,169,110,0.12);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.btn-save {
+  width: 100%;
+  padding: 16px;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  border-radius: 6px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-save:hover { background: var(--gold-light); }
+
+.save-notice {
+  text-align: center;
+  font-size: 12px;
+  color: var(--success);
+  margin-top: 12px;
+  display: none;
+}
+
+/* ─── CAMERA MODAL ─── */
+.modal-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-bg.open { display: flex; }
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  width: min(90vw, 480px);
+  text-align: center;
+}
+
+.modal-box h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: var(--ivory);
+  margin-bottom: 16px;
+}
+
+video {
+  width: 100%;
+  border-radius: 8px;
+  max-height: 280px;
+  object-fit: cover;
+  background: #000;
+}
+
+.modal-btns { display: flex; gap: 10px; margin-top: 16px; justify-content: center; }
+
+.btn-shoot {
+  padding: 12px 28px;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-cancel-cam {
+  padding: 12px 20px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+canvas#snap { display: none; }
+
+@media (max-width: 500px) {
+  .upload-row { grid-template-columns: 1fr; }
+  .result-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .nav-tabs { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">STYLINK</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('home')">ホーム</button>
+    <button class="nav-tab" onclick="showPage('diag')">診断</button>
+  </div>
+  <button class="nav-profile-btn" onclick="showPage('profile')" title="プロフィール">👤</button>
+</nav>
+
+<!-- ══════════ HOME ══════════ -->
+<div id="page-home" class="page active">
+
+  <!-- FULL-SCREEN VISUAL HERO -->
+  <div class="hero-visual">
+    <div class="hero-slides" id="hero-slides">
+      <!-- Slides injected by JS -->
+    </div>
+    <div class="hero-overlay"></div>
+
+    <!-- Trend label badge -->
+    <div class="hero-trend-badge" id="hero-trend-badge">
+      <div class="trend-badge-label">2025 SS Trend</div>
+      <div class="trend-badge-name" id="hero-trend-name">—</div>
+    </div>
+
+    <!-- Slide dots -->
+    <div class="hero-dots" id="hero-dots"></div>
+
+    <!-- Copy -->
+    <div class="hero-content">
+      <div class="hero-eyebrow">AI Fashion Platform</div>
+      <h1 class="hero-title">あなただけの<br><em>スタイルを、発見する。</em></h1>
+      <p class="hero-sub">
+        パーソナルカラーと骨格診断をAIが瞬時に解析。<br>
+        トレンドとあなたの個性を掛け合わせた、唯一のスタイル提案。
+      </p>
+      <div class="hero-cta-row">
+        <button class="btn-primary" onclick="showPage('diag')">無料で診断する →</button>
+        <button class="btn-secondary" onclick="showPage('profile')">プロフィール設定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TREND PHOTO STRIP -->
+  <div class="trend-strip">
+    <div class="trend-strip-header">
+      <div class="trend-strip-title">今季のトレンド</div>
+      <div class="trend-strip-season">2025 S/S</div>
+    </div>
+    <div class="trend-scroll" id="trend-scroll">
+      <!-- Trend cards injected by JS -->
+      <div class="trend-card"><div class="trend-card-placeholder"></div></div>
+      <div class="trend-card"><div class="trend-card-placeholder"></div></div>
+      <div class="trend-card"><div class="trend-card-placeholder"></div></div>
+      <div class="trend-card"><div class="trend-card-placeholder"></div></div>
+      <div class="trend-card"><div class="trend-card-placeholder"></div></div>
+    </div>
+  </div>
+
+  <!-- FEATURE GRID -->
+  <div class="feature-grid" style="margin-top:48px">
+    <div class="feature-card" onclick="showPage('diag')">
+      <span class="feature-icon">🎨</span>
+      <div class="feature-title">パーソナルカラー診断</div>
+      <div class="feature-desc">肌・瞳・髪の色から、あなたに似合う色を科学的に分析します。</div>
+    </div>
+    <div class="feature-card" onclick="showPage('diag')">
+      <span class="feature-icon">👗</span>
+      <div class="feature-title">骨格診断</div>
+      <div class="feature-desc">体型の特徴から、最もスタイルが良く見えるファッションを提案。</div>
+    </div>
+    <div class="feature-card" onclick="showPage('diag')">
+      <span class="feature-icon">🛍</span>
+      <div class="feature-title">ブランド提案</div>
+      <div class="feature-desc">診断結果に合ったブランドや商品を、価格帯別にご紹介します。</div>
+    </div>
+    <div class="feature-card" onclick="showPage('profile')">
+      <span class="feature-icon">✨</span>
+      <div class="feature-title">マイプロフィール</div>
+      <div class="feature-desc">身長・体重・好みを登録して、精度の高いパーソナル提案を実現。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DIAGNOSIS ══════════ -->
+<div id="page-diag" class="page">
+  <div class="diag-container">
+    <div class="page-heading">AI スタイル診断</div>
+    <p class="page-sub">写真をアップロードするだけで、あなた専用のスタイルを提案します。</p>
+
+    <!-- Upload section -->
+    <div id="diag-upload">
+
+      <!-- Profile hint -->
+      <div class="profile-hint" onclick="showPage('profile')" id="profile-hint-card">
+        <div class="profile-hint-icon">👤</div>
+        <div class="profile-hint-text">
+          <div class="profile-hint-title" id="profile-hint-title">プロフィールを設定すると精度が上がります</div>
+          <div class="profile-hint-sub" id="profile-hint-sub">身長・体重・スタイルの好みを登録 →</div>
+        </div>
+        <div class="profile-hint-arrow">›</div>
+      </div>
+
+      <div class="upload-row">
+        <div class="upload-box" id="face-box" onclick="document.getElementById('fi').click()">
+          <span class="upload-box-icon">🤳</span>
+          <div class="upload-box-label">顔写真</div>
+          <div class="upload-box-hint">パーソナルカラー用</div>
+          <input type="file" id="fi" accept="image/*" onchange="onUpload(event,'face')">
+        </div>
+        <div class="upload-box" id="body-box" onclick="document.getElementById('bi').click()">
+          <span class="upload-box-icon">🧍</span>
+          <div class="upload-box-label">全身写真</div>
+          <div class="upload-box-hint">骨格診断用</div>
+          <input type="file" id="bi" accept="image/*" onchange="onUpload(event,'body')">
+        </div>
+      </div>
+
+      <div class="cam-row">
+        <button class="btn-cam" onclick="openCam('face')">📷 顔をカメラ撮影</button>
+        <button class="btn-cam" onclick="openCam('body')">📷 全身をカメラ撮影</button>
+      </div>
+
+      <button class="btn-diagnose" id="diag-btn" onclick="runDiag()" disabled>
+        ✦ 診断をはじめる
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-screen" id="diag-loading">
+      <div class="loader"></div>
+      <div class="loading-label">AIが分析しています…</div>
+      <div class="loading-sub">パーソナルカラー・骨格・トレンドを照合中</div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-wrap" id="diag-results"></div>
+  </div>
+</div>
+
+<!-- ══════════ PROFILE ══════════ -->
+<div id="page-profile" class="page">
+  <div class="profile-container">
+    <div class="page-heading">マイプロフィール</div>
+    <p class="page-sub">情報を登録すると、診断の精度が上がりよりパーソナルな提案が届きます。</p>
+
+    <div class="form-section">
+      <div class="form-section-title">基本情報</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">ニックネーム</label>
+          <input type="text" class="form-input" id="pf-name" placeholder="例：Tommy">
+        </div>
+        <div class="form-group">
+          <label class="form-label">性別</label>
+          <select class="form-input" id="pf-gender">
+            <option value="">選択してください</option>
+            <option value="female">女性</option>
+            <option value="male">男性</option>
+            <option value="other">その他／回答しない</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">身長 (cm)</label>
+          <input type="number" class="form-input" id="pf-height" placeholder="例：162">
+        </div>
+        <div class="form-group">
+          <label class="form-label">体重 (kg)</label>
+          <input type="number" class="form-input" id="pf-weight" placeholder="例：52">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">年齢</label>
+          <input type="number" class="form-input" id="pf-age" placeholder="例：28">
+        </div>
+        <div class="form-group">
+          <label class="form-label">予算感</label>
+          <select class="form-input" id="pf-budget">
+            <option value="">選択してください</option>
+            <option value="low">〜¥5,000（プチプラ）</option>
+            <option value="mid">¥5,000〜¥20,000</option>
+            <option value="high">¥20,000〜¥50,000</option>
+            <option value="luxury">¥50,000〜（ラグジュアリー）</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">好みのスタイル（複数選択可）</div>
+      <div class="style-chips" id="style-chips">
+        <div class="style-chip" data-style="ナチュラル">ナチュラル</div>
+        <div class="style-chip" data-style="フェミニン">フェミニン</div>
+        <div class="style-chip" data-style="カジュアル">カジュアル</div>
+        <div class="style-chip" data-style="モード">モード</div>
+        <div class="style-chip" data-style="ストリート">ストリート</div>
+        <div class="style-chip" data-style="クラシック">クラシック</div>
+        <div class="style-chip" data-style="スポーティ">スポーティ</div>
+        <div class="style-chip" data-style="ミニマル">ミニマル</div>
+        <div class="style-chip" data-style="ボヘミアン">ボヘミアン</div>
+        <div class="style-chip" data-style="韓国系">韓国系</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">追加情報</div>
+      <div class="form-group">
+        <label class="form-label">コンプレックス・気になること</label>
+        <input type="text" class="form-input" id="pf-concern" placeholder="例：脚が短い、肩幅が広い">
+      </div>
+      <div class="form-group">
+        <label class="form-label">好きなブランド・インフルエンサー</label>
+        <input type="text" class="form-input" id="pf-brand" placeholder="例：ZARA, uniqlo, 美人百花系">
+      </div>
+    </div>
+
+    <button class="btn-save" onclick="saveProfile()">プロフィールを保存</button>
+    <div class="save-notice" id="save-notice">✓ 保存しました！診断ページで使用されます。</div>
+  </div>
+</div>
+
+<!-- Camera Modal -->
+<div class="modal-bg" id="cam-modal">
+  <div class="modal-box">
+    <h3 id="cam-title">撮影</h3>
+    <video id="cam-video" autoplay playsinline muted></video>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px;">明るい場所で撮影するとより正確に診断できます</p>
+    <div class="modal-btns">
+      <button class="btn-shoot" onclick="snapPhoto()">📸 撮影する</button>
+      <button class="btn-cancel-cam" onclick="closeCam()">キャンセル</button>
+    </div>
+  </div>
+</div>
+<canvas id="snap"></canvas>
+
+<script>
+// ─── STATE ───
+let faceImg = null, bodyImg = null;
+let camTarget = null, mediaStream = null;
+let diagResult = null;
+
+// ─── NAVIGATION ───
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const map = { home: 0, diag: 1 };
+  if (map[id] !== undefined) document.querySelectorAll('.nav-tab')[map[id]].classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 'diag') updateProfileHint();
+}
+
+// ─── PROFILE ───
+const STYLES_KEY = 'stylink_profile';
+
+function saveProfile() {
+  const data = {
+    name: document.getElementById('pf-name').value,
+    gender: document.getElementById('pf-gender').value,
+    height: document.getElementById('pf-height').value,
+    weight: document.getElementById('pf-weight').value,
+    age: document.getElementById('pf-age').value,
+    budget: document.getElementById('pf-budget').value,
+    concern: document.getElementById('pf-concern').value,
+    brand: document.getElementById('pf-brand').value,
+    styles: getSelectedStyles()
+  };
+  localStorage.setItem(STYLES_KEY, JSON.stringify(data));
+  document.getElementById('save-notice').style.display = 'block';
+  setTimeout(() => document.getElementById('save-notice').style.display = 'none', 3000);
+  updateProfileHint();
+}
+
+function loadProfile() {
+  try {
+    const d = JSON.parse(localStorage.getItem(STYLES_KEY) || '{}');
+    if (d.name) document.getElementById('pf-name').value = d.name;
+    if (d.gender) document.getElementById('pf-gender').value = d.gender;
+    if (d.height) document.getElementById('pf-height').value = d.height;
+    if (d.weight) document.getElementById('pf-weight').value = d.weight;
+    if (d.age) document.getElementById('pf-age').value = d.age;
+    if (d.budget) document.getElementById('pf-budget').value = d.budget;
+    if (d.concern) document.getElementById('pf-concern').value = d.concern;
+    if (d.brand) document.getElementById('pf-brand').value = d.brand;
+    if (d.styles) d.styles.forEach(s => {
+      document.querySelectorAll('.style-chip').forEach(c => {
+        if (c.dataset.style === s) c.classList.add('selected');
+      });
+    });
+    return d;
+  } catch { return {}; }
+}
+
+function getSelectedStyles() {
+  return [...document.querySelectorAll('.style-chip.selected')].map(c => c.dataset.style);
+}
+
+function getProfile() {
+  try { return JSON.parse(localStorage.getItem(STYLES_KEY) || '{}'); } catch { return {}; }
+}
+
+function updateProfileHint() {
+  const p = getProfile();
+  const title = document.getElementById('profile-hint-title');
+  const sub = document.getElementById('profile-hint-sub');
+  if (p.name) {
+    title.textContent = `${p.name}さんのプロフィールを使用します`;
+    const info = [p.height && p.height + 'cm', p.weight && p.weight + 'kg', p.styles && p.styles.length > 0 && p.styles[0]].filter(Boolean).join(' ・ ');
+    sub.textContent = info || '診断に反映されます';
+  }
+}
+
+document.querySelectorAll('.style-chip').forEach(chip => {
+  chip.addEventListener('click', () => chip.classList.toggle('selected'));
+});
+
+// ─── UPLOAD ───
+function onUpload(e, type) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = ev => setImg(type, ev.target.result);
+  r.readAsDataURL(file);
+}
+
+function setImg(type, dataUrl) {
+  if (type === 'face') { faceImg = dataUrl; renderBox('face-box', dataUrl, 'face'); }
+  else { bodyImg = dataUrl; renderBox('body-box', dataUrl, 'body'); }
+  checkBtn();
+}
+
+function renderBox(id, url, type) {
+  const box = document.getElementById(id);
+  box.classList.add('filled');
+  box.onclick = null;
+  box.innerHTML = `
+    <img class="preview" src="${url}">
+    <button class="remove-x" onclick="clearImg('${type}',event)">✕</button>
+  `;
+}
+
+function clearImg(type, e) {
+  e.stopPropagation();
+  if (type === 'face') {
+    faceImg = null;
+    const b = document.getElementById('face-box');
+    b.classList.remove('filled');
+    b.innerHTML = `<span class="upload-box-icon">🤳</span><div class="upload-box-label">顔写真</div><div class="upload-box-hint">パーソナルカラー用</div><input type="file" id="fi" accept="image/*" onchange="onUpload(event,'face')">`;
+    b.onclick = () => document.getElementById('fi').click();
+  } else {
+    bodyImg = null;
+    const b = document.getElementById('body-box');
+    b.classList.remove('filled');
+    b.innerHTML = `<span class="upload-box-icon">🧍</span><div class="upload-box-label">全身写真</div><div class="upload-box-hint">骨格診断用</div><input type="file" id="bi" accept="image/*" onchange="onUpload(event,'body')">`;
+    b.onclick = () => document.getElementById('bi').click();
+  }
+  checkBtn();
+}
+
+function checkBtn() {
+  document.getElementById('diag-btn').disabled = !(faceImg || bodyImg);
+}
+
+// ─── CAMERA ───
+async function openCam(target) {
+  camTarget = target;
+  document.getElementById('cam-title').textContent = target === 'face' ? '顔写真を撮影' : '全身写真を撮影';
+  document.getElementById('cam-modal').classList.add('open');
+  try {
+    mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+    document.getElementById('cam-video').srcObject = mediaStream;
+  } catch {
+    alert('カメラのアクセスが許可されていません。ブラウザの設定をご確認ください。');
+    closeCam();
+  }
+}
+
+function snapPhoto() {
+  const v = document.getElementById('cam-video');
+  const c = document.getElementById('snap');
+  c.width = v.videoWidth; c.height = v.videoHeight;
+  c.getContext('2d').drawImage(v, 0, 0);
+  closeCam();
+  setImg(camTarget, c.toDataURL('image/jpeg', 0.85));
+}
+
+function closeCam() {
+  document.getElementById('cam-modal').classList.remove('open');
+  if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+}
+
+// ─── DIAGNOSIS ───
+async function runDiag() {
+  document.getElementById('diag-upload').style.display = 'none';
+  document.getElementById('diag-loading').classList.add('show');
+
+  const prof = getProfile();
+  let content = [];
+
+  if (faceImg) {
+    const b64 = faceImg.split(',')[1];
+    const mt = faceImg.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+    content.push({ type: 'image', source: { type: 'base64', media_type: mt, data: b64 } });
+    content.push({ type: 'text', text: '上記は顔写真です。' });
+  }
+  if (bodyImg) {
+    const b64 = bodyImg.split(',')[1];
+    const mt = bodyImg.startsWith('data:image/png') ? 'image/png' : 'image/jpeg';
+    content.push({ type: 'image', source: { type: 'base64', media_type: mt, data: b64 } });
+    content.push({ type: 'text', text: '上記は全身写真です。' });
+  }
+
+  const profileText = prof.name ? `
+【ユーザープロフィール】
+名前: ${prof.name || '未設定'}
+性別: ${prof.gender || '未設定'}
+身長: ${prof.height || '未設定'}cm
+体重: ${prof.weight || '未設定'}kg
+年齢: ${prof.age || '未設定'}歳
+予算感: ${prof.budget || '未設定'}
+好みのスタイル: ${(prof.styles || []).join('、') || '未設定'}
+コンプレックス: ${prof.concern || '未設定'}
+好きなブランド: ${prof.brand || '未設定'}
+` : '（プロフィール未設定）';
+
+  const budgetMap = { low: 'プチプラ（〜¥5,000）', mid: 'ミドル（¥5,000〜¥20,000）', high: 'ハイ（¥20,000〜¥50,000）', luxury: 'ラグジュアリー（¥50,000〜）' };
+  const budget = budgetMap[prof.budget] || 'ミドル（¥5,000〜¥20,000）';
+
+  content.push({
+    type: 'text',
+    text: `あなたはプロのパーソナルスタイリスト兼ファッションディレクターです。
+${profileText}
+
+上記のプロフィールと写真を総合的に分析して、以下のJSON形式のみで回答してください。Markdownや説明文は一切不要です。JSONのみ出力してください。
+
+{
+  "personalColor": {
+    "type": "春・夏・秋・冬 のいずれか",
+    "subtype": "詳細サブタイプ（例：ライトスプリング）",
+    "description": "特徴を2〜3文で",
+    "bestColors": ["色名1","色名2","色名3","色名4"],
+    "bestColorHex": ["#XXXXXX","#XXXXXX","#XXXXXX","#XXXXXX"],
+    "avoidColors": ["避ける色1","避ける色2"]
+  },
+  "bodyType": {
+    "type": "ストレート/ウェーブ/ナチュラル",
+    "description": "骨格の特徴を2〜3文で",
+    "bestItems": ["似合うアイテム1","似合うアイテム2","似合うアイテム3"],
+    "avoidItems": ["避けるアイテム1","避けるアイテム2"]
+  },
+  "makeupSuggestion": {
+    "theme": "メイクテーマ",
+    "description": "具体的なメイク提案を3〜4文で",
+    "keyPoints": ["ポイント1","ポイント2","ポイント3"]
+  },
+  "fashionSuggestion": {
+    "theme": "2025トレンドを踏まえたテーマ",
+    "description": "コーデ提案を3〜4文で",
+    "keywords": ["KW1","KW2","KW3","KW4","KW5"]
+  },
+  "brandRecommendations": {
+    "makeup": [
+      {"name":"ブランド名","reason":"理由（1文）","priceRange":"価格帯（例：¥2,000〜¥5,000）","url":"https://実在するブランドの公式URL","featured":"代表商品名"},
+      {"name":"ブランド名","reason":"理由","priceRange":"価格帯","url":"https://実在URL","featured":"代表商品名"},
+      {"name":"ブランド名","reason":"理由","priceRange":"価格帯","url":"https://実在URL","featured":"代表商品名"}
+    ],
+    "fashion": [
+      {"name":"ブランド名","reason":"理由（1文）","priceRange":"価格帯","url":"https://実在するブランドの公式URL","featured":"代表アイテム名"},
+      {"name":"ブランド名","reason":"理由","priceRange":"価格帯","url":"https://実在URL","featured":"代表アイテム名"},
+      {"name":"ブランド名","reason":"理由","priceRange":"価格帯","url":"https://実在URL","featured":"代表アイテム名"}
+    ]
+  },
+  "overallMessage": "スタイリストからのパーソナルメッセージを2〜3文で"
+}
+
+ブランド推薦は予算感「${budget}」に合わせてください。URLは必ず実在するブランドの公式サイトのURLを使ってください（例：https://www.uniqlo.com/jp/ など）。`
+  });
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content }]
+      })
+    });
+    const data = await res.json();
+    const raw = data.content.map(i => i.text || '').join('');
+    const clean = raw.replace(/```json|```/g, '').trim();
+    diagResult = JSON.parse(clean);
+
+    document.getElementById('diag-loading').classList.remove('show');
+    renderResults(diagResult);
+  } catch (err) {
+    document.getElementById('diag-loading').classList.remove('show');
+    document.getElementById('diag-results').innerHTML = `
+      <div style="text-align:center;padding:60px 0;color:var(--muted)">
+        <div style="font-size:32px;margin-bottom:12px">⚠️</div>
+        <div style="font-size:15px;color:var(--ivory)">エラーが発生しました</div>
+        <div style="font-size:12px;margin-top:6px">もう一度お試しください</div>
+        <button class="btn-retry2" style="margin-top:24px;max-width:200px" onclick="resetDiag()">やり直す</button>
+      </div>`;
+    document.getElementById('diag-results').classList.add('show');
+    console.error(err);
+  }
+}
+
+function renderResults(r) {
+  const swatches = (r.personalColor.bestColorHex || []).map(h =>
+    `<div class="swatch" style="background:${h}" title="${h}"></div>`
+  ).join('');
+
+  const makeBrandList = (list) => list.map(b => `
+    <div class="brand-item">
+      <div class="brand-info">
+        <div class="brand-name">${b.name}</div>
+        <div class="brand-desc">${b.reason}｜${b.featured}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+        <div class="brand-price">${b.priceRange}</div>
+        <a class="brand-link" href="${b.url}" target="_blank" rel="noopener">公式 →</a>
+      </div>
+    </div>
+  `).join('');
+
+  const html = `
+    <div class="result-hero-band">
+      <div class="result-eyebrow">Your Personal Color</div>
+      <div class="result-type-name">${r.personalColor.type} — ${r.personalColor.subtype}</div>
+      <div class="result-type-sub">骨格：${r.bodyType.type}</div>
+      <div class="palette-row">${swatches}</div>
+      <div class="result-overview">${r.personalColor.description}</div>
+    </div>
+
+    <div class="result-grid">
+      <div class="result-block">
+        <div class="result-block-eye">骨格診断</div>
+        <div class="result-block-title">${r.bodyType.type}タイプ</div>
+        <div class="result-block-text">${r.bodyType.description}</div>
+        <div class="tags">${(r.bodyType.bestItems||[]).map(i=>`<span class="tag">✓ ${i}</span>`).join('')}</div>
+      </div>
+      <div class="result-block">
+        <div class="result-block-eye">ファッション提案</div>
+        <div class="result-block-title">${r.fashionSuggestion.theme}</div>
+        <div class="result-block-text">${r.fashionSuggestion.description}</div>
+        <div class="tags">${(r.fashionSuggestion.keywords||[]).map(k=>`<span class="tag">${k}</span>`).join('')}</div>
+      </div>
+    </div>
+
+    <div class="result-block" style="margin-bottom:14px">
+      <div class="result-block-eye">メイク提案</div>
+      <div class="result-block-title">💄 ${r.makeupSuggestion.theme}</div>
+      <div class="result-block-text">${r.makeupSuggestion.description}</div>
+      <div class="tags">${(r.makeupSuggestion.keyPoints||[]).map(p=>`<span class="tag">${p}</span>`).join('')}</div>
+    </div>
+
+    <div class="brand-section">
+      <div class="brand-section-title">💄 おすすめコスメブランド</div>
+      <div class="brand-list">${makeBrandList(r.brandRecommendations.makeup||[])}</div>
+    </div>
+
+    <div class="brand-section">
+      <div class="brand-section-title">👗 おすすめファッションブランド</div>
+      <div class="brand-list">${makeBrandList(r.brandRecommendations.fashion||[])}</div>
+    </div>
+
+    <div class="message-block">
+      <div class="message-block-title">✦ スタイリストからのメッセージ</div>
+      <div class="message-block-text">${r.overallMessage}</div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-pdf" onclick="exportPDF()">📄 PDFで保存・共有</button>
+      <button class="btn-retry2" onclick="resetDiag()">もう一度診断する</button>
+    </div>
+
+    <div class="disclaimer">
+      ※ AIによる参考診断です。照明・撮影環境により結果が異なる場合があります。<br>
+      より正確な診断はプロのスタイリストへのご相談をおすすめします。
+    </div>
+  `;
+
+  const wrap = document.getElementById('diag-results');
+  wrap.innerHTML = html;
+  wrap.classList.add('show');
+}
+
+function resetDiag() {
+  faceImg = null; bodyImg = null; diagResult = null;
+  document.getElementById('diag-results').classList.remove('show');
+  document.getElementById('diag-results').innerHTML = '';
+  document.getElementById('diag-upload').style.display = 'block';
+
+  // Reset boxes
+  const fb = document.getElementById('face-box');
+  fb.classList.remove('filled');
+  fb.innerHTML = `<span class="upload-box-icon">🤳</span><div class="upload-box-label">顔写真</div><div class="upload-box-hint">パーソナルカラー用</div><input type="file" id="fi" accept="image/*" onchange="onUpload(event,'face')">`;
+  fb.onclick = () => document.getElementById('fi').click();
+
+  const bb = document.getElementById('body-box');
+  bb.classList.remove('filled');
+  bb.innerHTML = `<span class="upload-box-icon">🧍</span><div class="upload-box-label">全身写真</div><div class="upload-box-hint">骨格診断用</div><input type="file" id="bi" accept="image/*" onchange="onUpload(event,'body')">`;
+  bb.onclick = () => document.getElementById('bi').click();
+
+  document.getElementById('diag-btn').disabled = true;
+}
+
+// ─── PDF EXPORT ───
+async function exportPDF() {
+  if (!diagResult) return;
+  const r = diagResult;
+  const prof = getProfile();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  const W = 210, margin = 20;
+  let y = 20;
+
+  // Helper
+  const line = (text, size, bold, color) => {
+    doc.setFontSize(size);
+    doc.setFont('helvetica', bold ? 'bold' : 'normal');
+    doc.setTextColor(...(color || [30, 20, 15]));
+    doc.text(text, margin, y);
+    y += size * 0.45 + 2;
+  };
+
+  const wrap = (text, size, maxW) => {
+    doc.setFontSize(size);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(80, 70, 65);
+    const lines = doc.splitTextToSize(text, maxW || W - margin * 2);
+    doc.text(lines, margin, y);
+    y += lines.length * (size * 0.45 + 1) + 2;
+  };
+
+  const divider = (color) => {
+    doc.setDrawColor(...(color || [200, 180, 160]));
+    doc.line(margin, y, W - margin, y);
+    y += 5;
+  };
+
+  // Header
+  doc.setFillColor(14, 12, 11);
+  doc.rect(0, 0, W, 40, 'F');
+  doc.setFontSize(22);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(201, 169, 110);
+  doc.text('STYLINK', margin, 18);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(180, 160, 140);
+  doc.text('AI Style Diagnosis Report', margin, 26);
+  const dateStr = new Date().toLocaleDateString('ja-JP');
+  doc.text(prof.name ? `${prof.name} 様 ／ ${dateStr}` : dateStr, W - margin, 26, { align: 'right' });
+  y = 52;
+
+  // Personal Color
+  line('PERSONAL COLOR', 9, false, [150, 120, 80]);
+  y += 2;
+  line(`${r.personalColor.type}  —  ${r.personalColor.subtype}`, 16, true, [30, 20, 15]);
+  y += 1;
+  wrap(r.personalColor.description, 9);
+
+  // Color swatches
+  const hexes = r.personalColor.bestColorHex || [];
+  hexes.forEach((hex, i) => {
+    const rgb = hexToRgb(hex);
+    if (rgb) {
+      doc.setFillColor(...rgb);
+      doc.circle(margin + i * 12, y + 4, 4, 'F');
+    }
+  });
+  y += 14;
+
+  divider();
+
+  // Body Type
+  line('BODY TYPE', 9, false, [150, 120, 80]);
+  y += 2;
+  line(r.bodyType.type + 'タイプ', 14, true, [30, 20, 15]);
+  y += 1;
+  wrap(r.bodyType.description, 9);
+  const bestItems = (r.bodyType.bestItems || []).join('  ・  ');
+  wrap('おすすめ：' + bestItems, 8);
+  y += 2;
+
+  divider();
+
+  // Makeup
+  line('MAKEUP', 9, false, [150, 120, 80]);
+  y += 2;
+  line(r.makeupSuggestion.theme, 13, true, [30, 20, 15]);
+  y += 1;
+  wrap(r.makeupSuggestion.description, 9);
+  y += 2;
+
+  divider();
+
+  // Fashion
+  line('FASHION', 9, false, [150, 120, 80]);
+  y += 2;
+  line(r.fashionSuggestion.theme, 13, true, [30, 20, 15]);
+  y += 1;
+  wrap(r.fashionSuggestion.description, 9);
+  const kws = (r.fashionSuggestion.keywords || []).join('  ·  ');
+  wrap(kws, 8);
+  y += 4;
+
+  // New page for brands
+  doc.addPage();
+  y = 20;
+
+  line('RECOMMENDED BRANDS — MAKEUP', 9, false, [150, 120, 80]);
+  y += 3;
+  (r.brandRecommendations.makeup || []).forEach(b => {
+    doc.setFillColor(245, 240, 235);
+    doc.roundedRect(margin, y - 4, W - margin * 2, 18, 2, 2, 'F');
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 20, 15);
+    doc.text(b.name, margin + 4, y + 4);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 80, 70);
+    doc.text(b.reason, margin + 4, y + 9);
+    doc.setTextColor(150, 120, 80);
+    doc.text(b.priceRange, W - margin - 4, y + 4, { align: 'right' });
+    doc.setTextColor(100, 120, 170);
+    doc.text(b.url, W - margin - 4, y + 9, { align: 'right' });
+    y += 22;
+  });
+
+  y += 4;
+  divider();
+
+  line('RECOMMENDED BRANDS — FASHION', 9, false, [150, 120, 80]);
+  y += 3;
+  (r.brandRecommendations.fashion || []).forEach(b => {
+    doc.setFillColor(245, 240, 235);
+    doc.roundedRect(margin, y - 4, W - margin * 2, 18, 2, 2, 'F');
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(30, 20, 15);
+    doc.text(b.name, margin + 4, y + 4);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 80, 70);
+    doc.text(b.reason, margin + 4, y + 9);
+    doc.setTextColor(150, 120, 80);
+    doc.text(b.priceRange, W - margin - 4, y + 4, { align: 'right' });
+    doc.setTextColor(100, 120, 170);
+    doc.text(b.url, W - margin - 4, y + 9, { align: 'right' });
+    y += 22;
+  });
+
+  y += 6;
+  // Message
+  doc.setFillColor(250, 245, 238);
+  doc.roundedRect(margin, y, W - margin * 2, 30, 3, 3, 'F');
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(150, 120, 80);
+  doc.text('Stylist\'s Message', margin + 6, y + 8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(60, 50, 45);
+  const msgLines = doc.splitTextToSize(r.overallMessage, W - margin * 2 - 12);
+  doc.text(msgLines, margin + 6, y + 14);
+
+  // Footer
+  const totalPages = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(180, 160, 140);
+    doc.text('STYLINK — AI Style Diagnosis', margin, 290);
+    doc.text(`${i} / ${totalPages}`, W - margin, 290, { align: 'right' });
+  }
+
+  doc.save(`STYLINK_診断レポート_${dateStr}.pdf`);
+}
+
+function hexToRgb(hex) {
+  const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return r ? [parseInt(r[1],16), parseInt(r[2],16), parseInt(r[3],16)] : null;
+}
+
+// ─── HERO SLIDESHOW & TREND CARDS ───
+
+// Curated Unsplash fashion images (free, no auth needed, topic=fashion)
+// Using Unsplash Source API for reliable fashion images
+const HERO_SLIDES = [
+  {
+    url: 'https://images.unsplash.com/photo-1529139574466-a303027330d3?w=1200&q=80&fit=crop',
+    trend: 'Quiet Luxury',
+    cat: 'ミニマル'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&q=80&fit=crop',
+    trend: 'Feminine Layers',
+    cat: 'フェミニン'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&q=80&fit=crop',
+    trend: 'Editorial Chic',
+    cat: 'モード'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1200&q=80&fit=crop',
+    trend: 'Street Core',
+    cat: 'ストリート'
+  },
+  {
+    url: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1200&q=80&fit=crop',
+    trend: 'Classic Revival',
+    cat: 'クラシック'
+  }
+];
+
+const TREND_CARDS = [
+  { url: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80&fit=crop&h=560', cat: 'トレンド', name: 'Quiet Luxury' },
+  { url: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&q=80&fit=crop&h=560', cat: 'メイク', name: 'ナチュラルグロウ' },
+  { url: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&q=80&fit=crop&h=560', cat: 'スタイル', name: 'Feminine Layers' },
+  { url: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=400&q=80&fit=crop&h=560', cat: 'モード', name: 'Editorial Look' },
+  { url: 'https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?w=400&q=80&fit=crop&h=560', cat: 'カジュアル', name: 'Daily Chic' },
+  { url: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=400&q=80&fit=crop&h=560', cat: 'コーデ', name: 'Street Core' },
+  { url: 'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?w=400&q=80&fit=crop&h=560', cat: 'アクセ', name: 'Gold Accent' },
+];
+
+let currentSlide = 0;
+let slideTimer = null;
+
+function initHero() {
+  const slidesEl = document.getElementById('hero-slides');
+  const dotsEl = document.getElementById('hero-dots');
+  if (!slidesEl) return;
+
+  // Build slides
+  slidesEl.innerHTML = HERO_SLIDES.map((s, i) => `
+    <div class="hero-slide ${i === 0 ? 'active' : ''}" style="background-image:url('${s.url}')"></div>
+  `).join('');
+
+  // Build dots
+  dotsEl.innerHTML = HERO_SLIDES.map((_, i) => `
+    <div class="hero-dot ${i === 0 ? 'active' : ''}" onclick="goSlide(${i})"></div>
+  `).join('');
+
+  updateTrendBadge(0);
+  startSlideshow();
+}
+
+function goSlide(n) {
+  const slides = document.querySelectorAll('.hero-slide');
+  const dots = document.querySelectorAll('.hero-dot');
+  slides[currentSlide].classList.remove('active');
+  dots[currentSlide].classList.remove('active');
+  currentSlide = n;
+  slides[currentSlide].classList.add('active');
+  dots[currentSlide].classList.add('active');
+  updateTrendBadge(currentSlide);
+  if (slideTimer) clearInterval(slideTimer);
+  startSlideshow();
+}
+
+function updateTrendBadge(i) {
+  const el = document.getElementById('hero-trend-name');
+  if (el) el.textContent = HERO_SLIDES[i].trend;
+}
+
+function startSlideshow() {
+  slideTimer = setInterval(() => {
+    goSlide((currentSlide + 1) % HERO_SLIDES.length);
+  }, 4500);
+}
+
+function initTrendCards() {
+  const scroll = document.getElementById('trend-scroll');
+  if (!scroll) return;
+
+  scroll.innerHTML = TREND_CARDS.map(c => `
+    <div class="trend-card" onclick="showPage('diag')">
+      <img class="trend-card-img" src="${c.url}" alt="${c.name}" loading="lazy"
+           onerror="this.parentElement.style.display='none'">
+      <div class="trend-card-overlay">
+        <div class="trend-card-cat">${c.cat}</div>
+        <div class="trend-card-name">${c.name}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── INIT ───
+loadProfile();
+updateProfileHint();
+initHero();
+initTrendCards();
+</script>
+</body>
+</html>
